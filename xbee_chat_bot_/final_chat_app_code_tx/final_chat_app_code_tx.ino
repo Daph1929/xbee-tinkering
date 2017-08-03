@@ -8,7 +8,7 @@ XBee xbee = XBee();
 static char payload[10];
 static char inByte[10];
 
-XBeeAddress64 addr64 = XBeeAddress64( 0x0013a200, 0x415656fa); //SH and SL address of receiver
+XBeeAddress64 addr64 = XBeeAddress64(0,0); //SH and SL address of receiver
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload,sizeof(payload)); //instance for making the frame
 ZBTxStatusResponse txStatus = ZBTxStatusResponse(); //instance for getting the status
 
@@ -66,7 +66,17 @@ while(Serial.available() > 0){
   i++;
   
   }//}while(inByte[i]==13);
-
+if(inByte[0]=='t')
+  {
+   char ax = inByte[1];
+   if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 1");}
+   if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 2");}
+   if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 3");}
+   if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 4");}
+    
+   inByte[0]='d';
+   Serial.print(inByte[0]);
+    }
   for(int j = 0; j < i; j++  )
    {  
       //Serial.print("j = " );Serial.print(j);
@@ -97,8 +107,25 @@ if (data_avai == true)
   Serial.println();
   delay(100);}
 
+
+
 }
 
-
+/*void addressed_to()
+{
+  
+  Serial.print("Whom would you like to speak to?");
+  Serial.print(" ");
+  Serial.print("1 2 3 or 4");
+  if(Serial.available()>0)
+  {
+   char ax = Serial.read();
+   if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);}
+   if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);}
+   if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );}
+   if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );}
+    }
+  
+  }*/
   
 

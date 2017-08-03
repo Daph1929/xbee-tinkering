@@ -69,7 +69,17 @@ while(Serial.available() > 0){
   i++;
   
   }//}while(inByte[i]==13);
-
+if(inByte[0]=='t')
+  {
+   char ax = inByte[1];
+   if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 1");}
+   if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 2");}
+   if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 3");}
+   if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 4");}
+    
+   inByte[0]='x';
+   
+   }
   for(int j = 0; j < i; j++  )
    {  
       //Serial.print("j = " );Serial.print(j);
@@ -93,5 +103,4 @@ while(Serial.available() > 0){
   Serial.println();
   delay(100);}
 
-     
      }
