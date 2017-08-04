@@ -6,9 +6,9 @@
 
     XBee xbee = XBee();
 
-    static char payload[10];
+    static char payload[50];
     
-    static char inByte[10];
+    static char inByte[50];
 
     XBeeAddress64 addr64 = XBeeAddress64(0,0); //SH and SL address of receiver
 
@@ -24,7 +24,7 @@
     
     uint8_t *a;
     
-    char x[10];
+    char x[50];
 
     uint8_t add[7];
     
@@ -62,7 +62,7 @@
        if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 2");}
        if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x41565710);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 3");}
        if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x4156583E);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 4");}
-       /*if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with everyone");}*/ 
+       if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with everyone");} 
        inByte[0]='d';
        
        }
@@ -109,7 +109,7 @@
         for (int j = 1; j < 9 ;j++)
         { 
           add[j]= return_address>>(64-(8*j));
-          /*Serial.print(add[j]);
+          /*Serial.print(add[j],HEX);
           Serial.print(" ");*/
           }
         if(add[7]==86)
@@ -124,14 +124,14 @@
         
         a = rx.getData();     //getData() give an address...so put it in a pointer (here--> a <--is a pointer)
         
-       for (int i = 0; i < 7 ; i ++)
+       for (int i = 0; i < 49 ; i++)
         {x[i]=a[i];               //get the first byte and put it in a variable
         Serial.print(x[i]);
         Serial.print("");}
         
     }}
     
-    
+    memset(payload,0,sizeof(payload));
     
     }
     
