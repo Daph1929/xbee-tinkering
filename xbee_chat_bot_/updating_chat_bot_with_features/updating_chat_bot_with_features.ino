@@ -21,6 +21,8 @@
     // create reusable response objects for responses we expect to handle
     
     ZBRxResponse rx = ZBRxResponse(); 
+
+    FrameIdResponse f =  FrameIdResponse();
     
     uint8_t *a;
     
@@ -60,12 +62,14 @@
        char ax = inByte[1];
        if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 1");}
        if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 2");}
-       if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x41565710);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 3");}
-       if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x4156583E);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with xbee 4");}
-       if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64 );Serial.print("you are now in conversation with everyone");} 
+       if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x41565710);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 3");}
+       if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x4156583E);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 4");}
+       if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with everyone");} 
        inByte[0]='d';
        
        }
+
+      
      for(int j = 0; j < i; j++  )
        {  
           //Serial.print("j = " );Serial.print(j);
@@ -77,8 +81,11 @@
            if(j == i-1)
           {  
             data_avai = true;
-            Serial.print(" | ");
+            Serial.print("----------Message sent----");
             Serial.print(j);
+            Serial.print("----");
+            Serial.println();
+            Serial.println();
             
         }}  
     
@@ -88,8 +95,6 @@
     if (data_avai == true) 
       {zbTx.setFrameId(5);
       xbee.send(zbTx);
-      Serial.print("Packet Sent");
-      Serial.println();
       delay(100);}
     
     
@@ -103,7 +108,10 @@
          xbee.getResponse().getZBRxResponse(rx);
          XBeeAddress64 return_address=rx.getRemoteAddress64();
          zbTx.setAddress64(return_address);
-           /* // got a zb rx packet*/
+        /* int frame_id = f.getFrameId();
+         Serial.println("Frame received Id = ");
+         Serial.println(frame_id);
+         got a zb rx packet*/
          //zbTx.getAddress64();
         //Serial.print(y);
         for (int j = 1; j < 9 ;j++)
@@ -114,20 +122,55 @@
           }
         if(add[7]==86)
         {
-         if(add[8]==250){Serial.print("Xbee 1 ");}
-         if(add[8]==253){Serial.print("Xbee 2 ");} 
+         if(add[8]==250){Serial.print("Xbee 1:--");}
+         if(add[8]==253){Serial.print("Xbee 2:--");} 
           
          }
-        if(add[7]==87){Serial.print("Xbee 3 ");}
-        if(add[7]==88){Serial.print("Xbee 4 ");} 
+        if(add[7]==87){Serial.print("Xbee 3:--");}
+        if(add[7]==88){Serial.print("Xbee 4:--");} 
          
         
         a = rx.getData();     //getData() give an address...so put it in a pointer (here--> a <--is a pointer)
         
        for (int i = 0; i < 49 ; i++)
         {x[i]=a[i];               //get the first byte and put it in a variable
-        Serial.print(x[i]);
-        Serial.print("");}
+         Serial.print(x[i]);
+         Serial.print("");
+       if(i==48)
+          {  
+            
+            Serial.print("----------- Message Received-----");
+            Serial.println();
+            
+          }
+        if(x[10]=='*'/*&&  x[16]=='&' && x[27]=='*'*/){
+        
+          //Serial.print("I got the request for  address");
+          payload[0]=' ';
+          zbTx.setFrameId(6);
+          xbee.send(zbTx);
+          delay(100);
+
+        x[10]=' ';
+        //x[16]=' ';
+        //x[27]=' '; 
+        }
+         
+       
+          }  
+
+        
+
+    /*   for (int i = 0; i < 49 ; i++)
+        {
+          do {
+             x[i]=a[i];               //get the first byte and put it in a variable
+             Serial.print(x[i]);
+             Serial.print("");
+             
+             }while(x[i]!= 0);
+             
+             }*/
         
     }}
     
@@ -135,6 +178,9 @@
     
     }
     
+  
+      
+
     /*void addressed_to()
     {
       
@@ -150,6 +196,6 @@
        if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );}
         }
       
-      }*/
+      }memset(payload,0,sizeof(payload));*/
       
 

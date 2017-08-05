@@ -21,12 +21,18 @@
     // create reusable response objects for responses we expect to handle
     
     ZBRxResponse rx = ZBRxResponse(); 
+
+    FrameIdResponse f =  FrameIdResponse();
     
     uint8_t *a;
     
     char x[50];
 
     uint8_t add[7];
+
+    const long interval = 5000;
+
+    unsigned long previousMillis = 0;
     
     void setup() {
       
@@ -39,6 +45,30 @@
       }
     
      void loop() {
+
+
+     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///Coordinator to send a broacoast message and get addresses////
+
+     unsigned long currentMillis = millis();
+   
+     if(currentMillis - previousMillis >= interval){
+      
+      previousMillis = currentMillis;
+      Serial.println(currentMillis);
+      Serial.println("Times up ");
+      XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);
+      zbTx.setAddress64(addr64);
+      Serial.println("getting addresses");
+      payload[10]= '*';
+     // payload[16]='&';
+      //payload[27]='*';
+      zbTx.setFrameId(6);
+      xbee.send(zbTx);
+      delay(100);}
+      
     
      boolean data_avai = false;
     
@@ -63,9 +93,10 @@
        if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x41565710);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 3");}
        if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x4156583E);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 4");}
        if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with everyone");} 
-       inByte[0]='d';
-       
+       inByte[0]=' ';
+       inByte[1]=' ';
        }
+      
      for(int j = 0; j < i; j++  )
        {  
           //Serial.print("j = " );Serial.print(j);
@@ -98,13 +129,15 @@
         
        if (xbee.getResponse().isAvailable()) {
           // got something
-          
+
+                
        if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
     
          xbee.getResponse().getZBRxResponse(rx);
          XBeeAddress64 return_address=rx.getRemoteAddress64();
          zbTx.setAddress64(return_address);
-           /* // got a zb rx packet*/
+        
+                   /* // got a zb rx packet*/
          //zbTx.getAddress64();
         //Serial.print(y);
         for (int j = 1; j < 9 ;j++)
@@ -127,15 +160,29 @@
         
        for (int i = 0; i < 49 ; i++)
         {x[i]=a[i];               //get the first byte and put it in a variable
-        Serial.print(x[i]);
-        Serial.print("");
+         Serial.print(x[i]);
+         Serial.print("");
        if(i==48)
           {  
             
             Serial.print("----------- Message Received-----");
             Serial.println();
             
-          }}  
+          }
+          
+        if(x[0]==' '){
+          for (int j = 1; j < 9 ;j++)
+        { 
+          add[j]= return_address>>(64-(8*j));
+          Serial.print(add[j],HEX);
+          Serial.print(" ");
+          }
+         x[0]='H';
+          
+          }
+        
+        
+        }  
 
         
 
@@ -155,34 +202,26 @@
     memset(payload,0,sizeof(payload));
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+     }
 
 
-///Coordinator to send a broacoast message and get addresses////
+/////////////////////////////////////
 
+/*
+Making function for data base kind of stuff
 
-    
-    
-    }
-    
+void add_database_update(){
+int count = 0; 
+String lsb_address; 
+   if(ax=='count'){ 
+              XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, lsb_address);
+              zbTx.setAddress64(addr64);
+              Serial.print("you are now in conversation with xbee"); Serial.print(count);}
+              count++;
   
-      
+  }
 
-    /*void addressed_to()
-    {
-      
-      Serial.print("Whom would you like to speak to?");
-      Serial.print(" ");
-      Serial.print("1 2 3 or 4");
-      if(Serial.available()>0)
-      {
-       char ax = Serial.read();
-       if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);}
-       if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);}
-       if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );}
-       if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64 );}
-        }
-      
-      }memset(payload,0,sizeof(payload));*/
-      
 
+
+*/
