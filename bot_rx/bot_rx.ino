@@ -40,7 +40,7 @@ void loop() {
        a = rx.getData();     //getData() give an address...so put it in a pointer (here--> a <--is a pointer)
        x=a[0];
                              //get the first byte and put it in a variable
-    
+      
         
 }}}
  

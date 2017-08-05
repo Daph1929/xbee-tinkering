@@ -1,3 +1,7 @@
+import serial
+
+ser = serial.Serial('/dev/ttyUSB0',9600)
+
 # 1 - Import library
 import pygame
 from pygame.locals import *
@@ -124,6 +128,12 @@ while running:
     # 7 - update the screen
     pygame.display.flip()
     # 8 - loop through the events
+    while 1: 
+        x=ser.readline()
+        x = str(ser.readline())
+         
+        print x
+    
     for event in pygame.event.get():
         # check if the event is the X button 
         if event.type==pygame.QUIT:
@@ -139,15 +149,7 @@ while running:
                 keys[2]=True
             elif event.key==K_d:
                 keys[3]=True
-        if event.type == pygame.KEYUP:
-            if event.key==pygame.K_w:
-                keys[0]=False
-            elif event.key==pygame.K_a:
-                keys[1]=False
-            elif event.key==pygame.K_s:
-                keys[2]=False
-            elif event.key==pygame.K_d:
-                keys[3]=False
+        
         if event.type==pygame.MOUSEBUTTONDOWN:
             shoot.play()
             position=pygame.mouse.get_pos()
