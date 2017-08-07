@@ -10,19 +10,19 @@
     
     static char inByte[50];                                                           //Array for Storing in Data Available Serially
 
-    static uint8_t addresses[10][4];                                                 // to store lsb addresses of Routers
+    static char addresses[10][4];                                                 // to store lsb addresses of Routers
 
     XBeeAddress64 addr64 = XBeeAddress64(0,0);                                       //SH and SL address of receiver
 
     ZBTxRequest zbTx = ZBTxRequest(addr64, payload,sizeof(payload));                  //instance for making the frame
     
-    ZBTxStatusResponse txStatus = ZBTxStatusResponse();                               //instance for getting the status
+    ZBTxStatusResponse txStatus = ZBTxStatusResponse();                              //instance for getting the status
 
     XBeeResponse response = XBeeResponse();                                           // create reusable response objects for responses we expect to handle
     
     ZBRxResponse rx = ZBRxResponse();                                                //Instance for response
 
-  //  FrameIdResponse f =  FrameIdResponse();
+    // FrameIdResponse f =  FrameIdResponse();
 
     uint8_t *pointer ;                                                                //pointer to go through the addresses
     
@@ -32,29 +32,47 @@
 
     uint8_t add1[7];                                                                   //Array to store and read return address
 
-    const long interval = 5000;                                                       //Coodinator Polling Interval
+    const long interval = 120000;                                                       //Coodinator Polling Interval
 
     unsigned long previousMillis = 0;                                                 //Variable to store previously Polled Time
+
+    boolean polled_at_setup = false;
     
     void setup() {
       
       Serial.begin(115200);                                                           //Its important to set Serial Baud Rate different from zigbee baud rate
       zigbeee.begin(9600);
       xbee.setSerial(zigbeee);                                                        //Setting which Serial port should xbee communicate with
-    
+       
       delay(1000);
       
       }
     
      void loop() {
 
-
+     
      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+       
+      
+      if(polled_at_setup==false)
+      { 
+        Serial.print("Coodinator Polling   ");
+        polled_at_setup = true;
+        Serial.print("entered loop");
+        int time_length = 10000;
+        unsigned long storedMillis = millis();
+        Serial.println(storedMillis);
+       do
+        { Serial.print("time  ");
+         
+          Serial.println(millis()-storedMillis);
+          delay(1000);
+          }while(millis()-storedMillis<=time_length);
+          Serial.print("Polling Done");
+         }
      ///Coordinator to send a broacoast message and get addresses////
      
-
+     
      ////Coodinator Polls for addresses///
 
      unsigned long currentMillis = millis();                                           //Current Time gotten by fuction called millis()
@@ -63,12 +81,11 @@
       
       previousMillis = currentMillis;                                                  //Store polling Time
       Serial.println(currentMillis);
-      Serial.println("Times up ");
       XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);                    //Set address for broadcast message
       zbTx.setAddress64(addr64);                                                       //Set the address in the frame
       Serial.println("getting addresses");
       payload[10]= '*';                                                                //Set payload as something identifiable by router in order to reply back on its own
-      // payload[16]='&';
+      //payload[16]='&';
       //payload[27]='*';
       zbTx.setFrameId(6);                                                              //Set frame id
       xbee.send(zbTx);                                                                 //Send the packet
@@ -76,6 +93,7 @@
 
 
       ////////End of Polling///////
+     
      //////////////////////////////////////Start of Transmitting Part//////////////////////////////////////////////////////////////////////////////
      boolean data_avai = false;                                                         //Boolean variable---if Data Available it will become true
     
@@ -83,7 +101,7 @@
       
     //do{
      while(Serial.available() > 0){
-      
+     
       inByte[i] = Serial.read();                                                        //Read Available Serial Data and Stor in an array called inByte[]
       //Serial.print("i = ");Serial.print(i);
       //Serial.print("   ");
@@ -100,10 +118,10 @@
        if(ax=='3'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x41565710);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 3");}
        if(ax=='4'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x4156583E);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 4");}
        if(ax=='5'){ XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with everyone");} 
-       inByte[0]=' ';                                                                   //If inByte[0] valuse isnt changed inside this loop, this loop will keep  running 
-       inByte[1]=' ';                                                                   //till user types somehting
+       inByte[0]='d';                                                                   //If inByte[0] valuse isnt changed inside this loop, this loop will keep  running 
+       //inByte[1]=' ';                                                                   //till user types somehting
        }
-      
+       
      for(int j = 0; j < i; j++  )                                                       //Storing available data in Payload
        {  
           //Serial.print("j = " );Serial.print(j);
@@ -178,37 +196,51 @@
           }
           
         if(x[0]==' '){
-          for (int j = 1; j < 9 ;j++)
+        for (int j = 1; j < 9 ;j++)
         { 
           add1[j]= return_address>>(64-(8*j));
           Serial.print(add1[j],HEX);
           Serial.print(" ");
-          }
-        for(int j = 5; j < 9; j++)
+        
+        }
+          
+        uint8_t temp[4];
+        for(int j = 0; j < 4; j++)
         {
+         temp[j]=add1[5+j];
+         Serial.print(temp[j],HEX);
+         Serial.print(" ");
          
-         // uint8_t temp[4];
-         
-          
-          }
-         x[0]='H';
-          
-          }
-        
-        
-        }  
+         }memset(addresses,0,sizeof(addresses));
 
-        
-     
-    }}
+       
+        for(int n = 0; n<10; n++){
+        for(int m = 0; m<4; m++)
+       { 
+         
+         addresses[n][m]=temp[m];
+         Serial.println(); 
+         Serial.print(n);
+         Serial.print(" ");
+         Serial.print(addresses[n][m],HEX);
+         
+         
+        }
+        }
+         x[0]='H';
+        }
+        }
+        }
+        }
     
     memset(payload,0,sizeof(payload)); //memset==fastest way to clear an array
-    
+        
+        
+        
+        }
 
-     }
 
-
-/////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 /*
 Making function for data base kind of stuff
