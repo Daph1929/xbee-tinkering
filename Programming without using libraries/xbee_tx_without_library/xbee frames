@@ -1,0 +1,17 @@
+7E 0 D 90 0 7D 33 A2 0 41 56 56 FA 0 0 1 64 6E ----------- arduino serial console rx
+
+Receive Packet (API 2)
+
+7E 00 0D 90 00 7D 33 A2 00 41 56 56 FA 00 00 01 64 6E
+
+Start delimiter: 7E
+Length: 00 0D (13)
+Frame type: 90 (Receive Packet)
+64-bit source address: 00 13 A2 00 41 56 56 FA
+16-bit source address: 00 00
+Receive options: 01
+RF data: 64
+Checksum: 6E
+
+
+XCTU output

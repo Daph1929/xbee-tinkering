@@ -50,192 +50,30 @@
     
      void loop() {
 
-     //Setup_Poll();
-
-     //midTime_Poll();
-     Talk_Listen();
+      Talk_Listen();
      
      }
 
 
-//////////////////////////////////////////////////////////////////////////////////
-
-/*
-Making function for data base kind of stuff
-
-void add_database_update(){
-int count = 0; 
-String lsb_address; 
-   if(ax=='count'){ 
-              XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, lsb_address);
-              zbTx.setAddress64(addr64);
-              Serial.print("you are now in conversation with xbee"); Serial.print(count);}
-              count++;
-  
-  }
-
-
-
-*/
-
-
-void Setup_Poll()
-{
-   if(polled_at_setup==false)
-      { 
-        Serial.print("Coodinator Polling   ");
-        polled_at_setup = true;
-        Serial.print("entered loop");
-        int time_length = 10000;
-        unsigned long storedMillis = millis();
-        Serial.println(storedMillis);
-       do
-        { 
-         
-          XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);
-          zbTx.setAddress64(addr64);
-          payload[10]= '*';
-          zbTx.setFrameId(7);
-          xbee.send(zbTx); 
-          delay(100);
-          xbee.readPacket();                                                     
-        
-          if (xbee.getResponse().isAvailable()) {
-              
-              // got something
-
-                
-           if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
-    
-         xbee.getResponse().getZBRxResponse(rx);
-         XBeeAddress64 return_address=rx.getRemoteAddress64();
-         zbTx.setAddress64(return_address);
-
-         a = rx.getData(); 
-
-         x[1] = a[1];
-         Serial.print(x[1]);
-           }}
-          
-          
-          }while(millis()-storedMillis<=time_length);
-          
-          
-          
-          
-          
-          Serial.print("Polling Done");
-
-          
-         }
-  
-  
-  }
-
-  void midTime_Poll(){
-    
-      unsigned long currentMillis = millis();                                           //Current Time gotten by fuction called millis()
-   
-     if(currentMillis - previousMillis >= interval){                                   //check if its time to poll
-      
-      previousMillis = currentMillis;                                                  //Store polling Time
-      Serial.println(currentMillis);
-      XBeeAddress64 addr64 = XBeeAddress64(0xFFFFFFFF, 0xFFFFFFFF);                    //Set address for broadcast message
-      zbTx.setAddress64(addr64);                                                       //Set the address in the frame
-      Serial.println("getting addresses");
-      payload[10]= '*';                                                                //Set payload as something identifiable by router in order to reply back on its own
-      //payload[16]='&';
-      //payload[27]='*';
-      zbTx.setFrameId(6);                                                              //Set frame id
-      xbee.send(zbTx);                                                                 //Send the packet
-      delay(100);}
-
-
-      xbee.readPacket();                                                     
-        
-       if (xbee.getResponse().isAvailable()) {
-          // got something
-
-                
-       if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
-    
-         xbee.getResponse().getZBRxResponse(rx);
-         XBeeAddress64 return_address=rx.getRemoteAddress64();
-         zbTx.setAddress64(return_address);
-        
-               
-        a = rx.getData();     //getData() give an address...so put it in a pointer (here--> a <--is a pointer)
-        
-       for (int i = 0; i < 3 ; i++)
-        {x[i]=a[i];               //get the first byte and put it in a variable
-         Serial.print(x[i]);
-         Serial.print("");
-         }
-          
-        if(x[0]==' '){
-        for (int j = 1; j < 9 ;j++)
-        { 
-          add1[j]= return_address>>(64-(8*j));
-          Serial.print(add1[j],HEX);
-          Serial.print(" ");
-        
-        }
-          
-        uint8_t temp[4];
-        for(int j = 0; j < 4; j++)
-        {
-         temp[j]=add1[5+j];
-         Serial.print(temp[j],HEX);
-         Serial.print(" ");
-         
-         }memset(addresses,0,sizeof(addresses));
-
-       
-        for(int n = 0; n<10; n++){
-        for(int m = 0; m<4; m++)
-       { 
-         
-         addresses[n][m]=temp[m];
-         Serial.println(); 
-         Serial.print(n);
-         Serial.print(" ");
-         Serial.print(addresses[n][m],HEX);
-         
-         
-        }
-        }
-         x[0]='H';
-        }
-         memset(payload,0,sizeof(payload)); //memset==fastest way to clear an array
-        }
-        }
-        }
-    
-   
-
-    
-    
-    
-
   void Talk_Listen()
   {
-     boolean data_avai = false;                                                         //Boolean variable---if Data Available it will become true
+     boolean data_avai = false;                                                        
     
      int i = 0;
       
-    //do{
+    
      while(Serial.available() > 0){
      
-      inByte[i] = Serial.read();                                                        //Read Available Serial Data and Stor in an array called inByte[]
+      inByte[i] = Serial.read();                                                       
       //Serial.print("i = ");Serial.print(i);
       //Serial.print("   ");
       // Serial.println(inByte[i],HEX);+
       delay(10);
       i++;
       
-      }//}while(inByte[i]==13);
-     if(inByte[0]=='t')                                                                 //if user types in t1/t2/....etc a particular address is chosen accordingly
-      {                                                                                 //and message is sent to this particular address
+      }
+     if(inByte[0]=='t')                                                                 
+      {                                                                               
        char ax = inByte[1];
        if(ax=='1'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fa);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 1");}
        if(ax=='2'){ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd);zbTx.setAddress64(addr64);Serial.print("you are now in conversation with xbee 2");}
@@ -265,10 +103,8 @@ void Setup_Poll()
             
         }}  
     
-       /*  //data_avai = true;
-     //payload[0] = ((pin1 << 2) | pin1) & 0x0F;
-      //payload [1] = */
-    if (data_avai == true)                                                                //Once Data available is true send this packet
+     
+    if (data_avai == true)                                                               
       {zbTx.setFrameId(5);
       xbee.send(zbTx);
       delay(100);}
