@@ -8,7 +8,7 @@ XBee xbee = XBee();
 static uint8_t payload[10];
 static uint8_t inByte[10];
 
-XBeeAddress64 addr64 = XBeeAddress64( 0x0013a200, 0x415656fa); //SH and SL address of receiver
+XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd); //SH and SL address of receiver
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload,sizeof(payload)); //instance for making the frame
 ZBTxStatusResponse txStatus = ZBTxStatusResponse(); //instance for getting the status
 
