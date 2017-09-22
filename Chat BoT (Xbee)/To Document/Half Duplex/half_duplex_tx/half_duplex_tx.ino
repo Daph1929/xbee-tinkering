@@ -12,6 +12,15 @@ XBeeAddress64 addr64 = XBeeAddress64(0x0013a200, 0x415656fd); //SH and SL addres
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload,sizeof(payload)); //instance for making the frame
 ZBTxStatusResponse txStatus = ZBTxStatusResponse(); //instance for getting the status
 
+XBeeResponse response = XBeeResponse();
+    
+// create reusable response objects for responses we expect to handle
+    
+ZBRxResponse rx = ZBRxResponse(); 
+    
+    uint8_t *a;
+    
+    char x[50];
 void setup() {
   
   Serial.begin(115200);
@@ -68,6 +77,34 @@ if (data_avai == true)
   Serial.print("Packet Sent");
   Serial.println();
   delay(100);}
+
+xbee.readPacket();
+    
+   if (xbee.getResponse().isAvailable()) {
+      // got something
+      
+   if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
+
+       xbee.getResponse().getZBRxResponse(rx);
+       XBeeAddress64 return_address=rx.getRemoteAddress64();
+       zbTx.setAddress64(return_address);
+     
+       Serial.println("---------------Message Received---------------");
+       Serial.println(" ");
+
+        // got a zb rx packet
+  
+        a = rx.getData();     //getData() give an address...so put it in a pointer (here--> a <--is a pointer)
+    
+   for (int i = 0; i < 50 ; i ++)
+      {
+        x[i]=a[i];               //get the first byte and put it in a variable
+        Serial.print(x[i]);
+        
+      }
+    }
+   }
+
 
 memset(payload,0,sizeof(payload));
 }
